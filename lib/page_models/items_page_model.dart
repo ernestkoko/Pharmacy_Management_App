@@ -203,6 +203,7 @@ class ItemsPageModel with ChangeNotifier {
       final _result = await SqLiteDatabase.readAllBagData();
 
       final finalResult = _result.map((e) => BagData.fromMap(e)).toList();
+
       return finalResult;
     } catch (error) {
       rethrow;

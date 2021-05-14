@@ -63,17 +63,19 @@ class BagPage extends StatelessWidget {
                   ],
                 ),
                 child3: Container(
-                  child: FutureBuilder<List<BagData>?>(
-                      future: _provider.getAllCartItems(),
-                      builder: (ctx, snapshot) {
-                        if (snapshot.hasData) {
-                          ///return the length of the list if there is data
-                          return Text('${snapshot.data!.length}');
-                        }
+                  child: Consumer<BagPageModel>(
+                    builder: (ctx, _, child) => FutureBuilder<List<BagData>?>(
+                        future: _provider.getAllCartItems(),
+                        builder: (ctx, snapshot) {
+                          if (snapshot.hasData) {
+                            ///return the length of the list if there is data
+                            return Text('${snapshot.data!.length}');
+                          }
 
-                        ///if no data is assigned return Text with zero string
-                        return Text('0');
-                      }),
+                          ///if no data is assigned return Text with zero string
+                          return Text('0');
+                        }),
+                  ),
                   padding: EdgeInsets.all(10),
                   // margin: const EdgeInsets.only(right: 10),
                   decoration: BoxDecoration(
@@ -99,7 +101,7 @@ class BagPage extends StatelessWidget {
               ),
               Expanded(
                 child: Consumer<BagPageModel>(
-                 builder:(ctx, _ ,child)=> FutureBuilder<List<ItemData>?>(
+                  builder: (ctx, _, child) => FutureBuilder<List<ItemData>?>(
                     future: provider.getAllItems(),
                     builder: (BuildContext ctx, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting)
@@ -108,8 +110,8 @@ class BagPage extends StatelessWidget {
                       ///check if the is data and return the needed widget if true
                       if (snapshot.hasData) {
                         if (snapshot.data!.isNotEmpty) {
-                          return  listWidget(
-                                  snapshot.data!, provider.itemDatList);
+                          return listWidget(
+                              snapshot.data!, provider.itemDatList);
                         } else {
                           return Center(
                             child: Text(
@@ -135,7 +137,7 @@ class BagPage extends StatelessWidget {
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
                 child3: Consumer<BagPageModel>(
-                  builder:(ctx, _, child)=> FutureBuilder<List<ItemData>?>(
+                  builder: (ctx, _, child) => FutureBuilder<List<ItemData>?>(
                     future: provider.getAllItems(),
                     builder: (BuildContext ctx, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting)
@@ -197,5 +199,4 @@ class BagPage extends StatelessWidget {
         itemBuilder: (BuildContext ctx, int index) =>
             BagSummaryWidget(data[index], quantity[index]!));
   }
-
 }

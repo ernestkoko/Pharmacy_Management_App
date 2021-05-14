@@ -1,6 +1,7 @@
 import 'package:dro_pharmacy/assets/myIcons.dart';
 import 'package:dro_pharmacy/data/bag_data.dart';
 import 'package:dro_pharmacy/data/item_data.dart';
+import 'package:dro_pharmacy/page_models/bag_page_model.dart';
 import 'package:dro_pharmacy/page_models/items_page_model.dart';
 import 'package:dro_pharmacy/pages/bag_page.dart';
 import 'package:dro_pharmacy/widgets/common_widgets/common_row_widget.dart';
@@ -21,6 +22,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
   Widget build(BuildContext context) {
     final item = ModalRoute.of(context)!.settings.arguments as ItemData;
      _provider = Provider.of<ItemsPageModel>(context);
+    final provider = Provider.of<BagPageModel>(context, listen: false);
     print('Args: $item');
     print('Args Id: ${item.id}');
     return Scaffold(
@@ -35,17 +37,19 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                     borderRadius: BorderRadius.all(Radius.circular(10))),
                 child: Row(children: [
                   const Icon(Icons.shopping_bag_outlined),
-                  FutureBuilder<List<BagData>?>(
-                      future: _provider!.getAllCartItems(),
-                      builder: (ctx, snapshot) {
-                        if (snapshot.hasData) {
-                          ///return the length of the list if there is data
-                          return Text('${snapshot.data!.length}');
-                        }
+                  Consumer<BagPageModel>(
+                    builder:(ctx, _, child)=> FutureBuilder<List<BagData>?>(
+                        future: _provider!.getAllCartItems(),
+                        builder: (ctx, snapshot) {
+                          if (snapshot.hasData) {
+                            ///return the length of the list if there is data
+                            return Text('${snapshot.data!.length}');
+                          }
 
-                        ///if no data is assigned return Text with zero string
-                        return Text('0');
-                      })
+                          ///if no data is assigned return Text with zero string
+                          return Text('0');
+                        }),
+                  )
                 ])),
           )
         ]),

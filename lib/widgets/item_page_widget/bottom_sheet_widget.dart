@@ -1,4 +1,5 @@
 import 'package:dro_pharmacy/data/bag_data.dart';
+import 'package:dro_pharmacy/page_models/bag_page_model.dart';
 import 'package:dro_pharmacy/page_models/items_page_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,11 +11,12 @@ class BottomSheetWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.only(left: 10, right: 10, top: 3),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        color: Colors.purple.shade700,),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        color: Colors.purple.shade700,
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -48,12 +50,16 @@ class BottomSheetWidget extends StatelessWidget {
                       color: Colors.white,
                       // borderRadius: BorderRadius.circular(20)
                       shape: BoxShape.circle),
-                  child: FutureBuilder<List<BagData>?>(future: provider.getAllCartItems(),builder: (ctx, snapshot) {
-                    if (snapshot.hasData) {
-                      return Text("${snapshot.data!.length}");
-                    }
-                    return Text('0');
-                  }),
+                  child: Consumer<BagPageModel>(
+                    builder: (ctx,provider, child) => FutureBuilder<List<BagData>?>(
+                        future: provider.getAllCartItems(),
+                        builder: (ctx, snapshot) {
+                          if (snapshot.hasData) {
+                            return Text("${snapshot.data!.length}");
+                          }
+                          return Text('0');
+                        }),
+                  ),
                 )
               ],
             ),
