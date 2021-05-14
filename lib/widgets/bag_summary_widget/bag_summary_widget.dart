@@ -29,7 +29,7 @@ class _BagSummaryWidgetState extends State<BagSummaryWidget> {
   @override
   Widget build(BuildContext context) {
     Color _white = Colors.white;
-    final _provider = Provider.of<BagPageModel>(context, listen: false);
+    final _provider = Provider.of<BagPageModel>(context);
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -45,7 +45,7 @@ class _BagSummaryWidgetState extends State<BagSummaryWidget> {
                 children: [
                   Container(
                     child: CircleAvatar(
-                      backgroundImage: NetworkImage(widget.item.imageUrl!),
+                      backgroundImage: AssetImage(widget.item.imageUrl!),
                     ),
                   ),
                   SizedBox(
@@ -150,6 +150,7 @@ class _BagSummaryWidgetState extends State<BagSummaryWidget> {
       await provider.deleteItem(id);
       await Fluttertoast.showToast(
           backgroundColor: Colors.white,
+          textColor: Colors.black,
           msg: 'Deleted successfully',
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER);

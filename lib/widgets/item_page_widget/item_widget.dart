@@ -17,13 +17,16 @@ class ItemWidget extends StatelessWidget {
         elevation: 10,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
-
           children: [
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Image.network(
+                child: Image.asset(
                   item.imageUrl!,
+                  errorBuilder: (ctx, exception, trace) => Icon(
+                    Icons.error_outline,
+                    color: Colors.red,
+                  ),
                   fit: BoxFit.contain,
                 ),
               ),

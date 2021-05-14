@@ -15,8 +15,7 @@ class ItemsPageModel with ChangeNotifier {
   static List<ItemData> productList = [
     ItemData(
         id: "PahAHGAGI",
-        imageUrl:
-            'https://mir-s3-cdn-cf.behance.net/project_modules/disp/d08c2420185017.5604201066224.jpg',
+        imageUrl: 'assets/image/durofen_pharm.png',
         manufacturerName: 'DUROFEN',
         // itemName: "Glucofen Sulphate  500 mg",
         itemName: "Glucofen Sulphate",
@@ -24,8 +23,8 @@ class ItemsPageModel with ChangeNotifier {
         itemPrice: 300),
     ItemData(
       id: "HJAGjAU",
-      imageUrl:
-          "https://i.pinimg.com/originals/69/b8/e1/69b8e14095884291da494a3543f20b11.jpg",
+      imageUrl: 'assets/image/glibofen_pharm.png',
+
       manufacturerName: "LIPTIPS",
       // itemName: 'GLIBOFEN Tablets 5/850',
       itemName: 'GLIBOFEN Tablets',
@@ -34,8 +33,7 @@ class ItemsPageModel with ChangeNotifier {
     ),
     ItemData(
       id: 'AERjahAY',
-      imageUrl:
-          "https://mir-s3-cdn-cf.behance.net/project_modules/disp/51adf120185023.5604201011e59.jpg",
+      imageUrl: 'assets/image/travegyl_pharm.png',
       manufacturerName: "Martarios",
       itemName: 'Tavegyl Clemastinum1',
       itemType: 'Tablet',
@@ -43,8 +41,7 @@ class ItemsPageModel with ChangeNotifier {
     ),
     ItemData(
       id: "YuHahHn",
-      imageUrl:
-          "https://banner2.cleanpng.com/20180920/kaw/kisspng-brand-product-design-drug-drug-box-by-yulanglay-on-deviantart-5ba43c2ed52d32.1570257015374899668732.jpg",
+      imageUrl: 'assets/image/progreffon_pharm.png',
       manufacturerName: "ProgGreffon",
       itemName: '2.468mg Tacrolimus',
       itemType: 'Tablet',
@@ -52,8 +49,7 @@ class ItemsPageModel with ChangeNotifier {
     ),
     ItemData(
       id: "5Ggjkjek",
-      imageUrl:
-          "https://i.pinimg.com/originals/64/8e/a3/648ea396aa84a07f034d71e9f0e2dd4a.jpg",
+      imageUrl: 'assets/image/disprin_pharm.png',
       manufacturerName: "DISPRIN",
       itemName: 'Disprin Tab',
       itemType: 'Tablet',
@@ -61,9 +57,7 @@ class ItemsPageModel with ChangeNotifier {
     ),
     ItemData(
       id: "3uRejsi",
-      imageUrl:
-          "https://e7.pngegg.com/pngimages/1006/778/png-clipart-pharmaceutical-packaging-pharmaceutical-industry-packaging-and-labeling-pharmaceutical-engineering-bayer-design-pharmaceutical-drug-behance.png",
-      manufacturerName: "Aspirin",
+      imageUrl: 'assets/image/aspirin_pharm.png',
       itemName: 'Aspirin Tab 250mg',
       itemType: 'Tablet',
       itemPrice: 204,

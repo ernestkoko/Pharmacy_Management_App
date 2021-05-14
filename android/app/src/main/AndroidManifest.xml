@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ernest.dro_pharmacy">
    <application
-        android:label="dro_pharmacy"
+        android:label="Pharmacy App"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

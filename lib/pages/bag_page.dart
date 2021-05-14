@@ -12,7 +12,7 @@ class BagPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _provider = Provider.of<BagPageModel>(context);
+    final _provider = Provider.of<BagPageModel>(context, listen: false);
     final provider = Provider.of<ItemsPageModel>(context, listen: false);
     Color _white = Colors.white;
     return Scaffold(
@@ -98,32 +98,35 @@ class BagPage extends StatelessWidget {
                     borderRadius: BorderRadius.all(Radius.circular(20))),
               ),
               Expanded(
-                child: FutureBuilder<List<ItemData>?>(
-                  future: provider.getAllItems(),
-                  builder: (BuildContext ctx, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting)
-                      return Center(child: CircularProgressIndicator());
+                child: Consumer<BagPageModel>(
+                 builder:(ctx, _ ,child)=> FutureBuilder<List<ItemData>?>(
+                    future: provider.getAllItems(),
+                    builder: (BuildContext ctx, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting)
+                        return Center(child: CircularProgressIndicator());
 
-                    ///check if the is data and return the needed widget if true
-                    if (snapshot.hasData) {
-                      if (snapshot.data!.isNotEmpty) {
-                        return listWidget(snapshot.data!, provider.itemDatList);
-                      } else {
+                      ///check if the is data and return the needed widget if true
+                      if (snapshot.hasData) {
+                        if (snapshot.data!.isNotEmpty) {
+                          return  listWidget(
+                                  snapshot.data!, provider.itemDatList);
+                        } else {
+                          return Center(
+                            child: Text(
+                              'You have got no item in your bag',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          );
+                        }
+                      }
+                      if (snapshot.hasError) {
                         return Center(
-                          child: Text(
-                            'You have got no item in your bag',
-                            style: TextStyle(color: Colors.white),
-                          ),
+                          child: Text("${snapshot.error}"),
                         );
                       }
-                    }
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text("${snapshot.error}"),
-                      );
-                    }
-                    return Center(child: CircularProgressIndicator());
-                  },
+                      return Center(child: CircularProgressIndicator());
+                    },
+                  ),
                 ),
               ),
               CommonRow(
@@ -131,31 +134,34 @@ class BagPage extends StatelessWidget {
                   "Total",
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
-                child3: FutureBuilder<List<ItemData>?>(
-                  future: provider.getAllItems(),
-                  builder: (BuildContext ctx, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting)
-                      return Center(child: CircularProgressIndicator());
+                child3: Consumer<BagPageModel>(
+                  builder:(ctx, _, child)=> FutureBuilder<List<ItemData>?>(
+                    future: provider.getAllItems(),
+                    builder: (BuildContext ctx, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting)
+                        return Center(child: CircularProgressIndicator());
 
-                    if (snapshot.hasData) {
-                      final data = snapshot.data!;
-                      final list = provider.itemDatList;
-                      double amount = 0;
-                      for (int i = 0; i < data.length; i++) {
-                        amount += data[i].itemPrice! * list[i]!;
+                      if (snapshot.hasData) {
+                        ///get the data
+                        final data = snapshot.data!;
+                        final list = provider.itemDatList;
+                        double amount = 0;
+                        for (int i = 0; i < data.length; i++) {
+                          amount += data[i].itemPrice! * list[i]!;
+                        }
+                        return Text(
+                          "N${amount.round()}",
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        );
                       }
-                      return Text(
-                        "N${amount.round()}",
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      );
-                    }
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text("${snapshot.error}"),
-                      );
-                    }
-                    return Center(child: CircularProgressIndicator());
-                  },
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text("${snapshot.error}"),
+                        );
+                      }
+                      return Center(child: CircularProgressIndicator());
+                    },
+                  ),
                 ),
 
                 // Text(
@@ -191,4 +197,5 @@ class BagPage extends StatelessWidget {
         itemBuilder: (BuildContext ctx, int index) =>
             BagSummaryWidget(data[index], quantity[index]!));
   }
+
 }
