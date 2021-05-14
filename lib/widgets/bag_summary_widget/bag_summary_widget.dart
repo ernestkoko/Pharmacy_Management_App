@@ -1,8 +1,9 @@
 import 'package:dro_pharmacy/assets/myIcons.dart';
 import 'package:dro_pharmacy/data/item_data.dart';
-import 'package:dro_pharmacy/page_models/items_page_model.dart';
+import 'package:dro_pharmacy/page_models/bag_page_model.dart';
 import 'package:dro_pharmacy/widgets/common_widgets/common_row_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class BagSummaryWidget extends StatefulWidget {
@@ -17,25 +18,29 @@ class BagSummaryWidget extends StatefulWidget {
 }
 
 class _BagSummaryWidgetState extends State<BagSummaryWidget> {
-  bool _expanded = false;
+  bool? _expanded;
+
+  @override
+  void initState() {
+    super.initState();
+    _expanded = false;
+  }
 
   @override
   Widget build(BuildContext context) {
     Color _white = Colors.white;
-    final _provider = Provider.of<ItemsPageModel>(context);
-    return Container(
-      margin: const EdgeInsets.only(top: 11),
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: () {
-              ///toggle expanded
-
-              setState(() {
-                _expanded = !_expanded;
-              });
-            },
-            child: CommonRow(
+    final _provider = Provider.of<BagPageModel>(context, listen: false);
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _expanded = !_expanded!;
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.only(top: 11),
+        child: Column(
+          children: [
+            CommonRow(
               child1: Row(
                 children: [
                   Container(
@@ -73,36 +78,49 @@ class _BagSummaryWidgetState extends State<BagSummaryWidget> {
                 style: TextStyle(color: _white),
               ),
             ),
-          ),
-          if (_expanded)
-            CommonRow(
-                child1: _container(Icons.delete,
-                    () async => _deleteItem(widget.item.id!, _provider)),
-                child3: CommonRow(
-                  child1: _container(
-                      MyIcons.minus,
-                      () async => await decrementAndUpdate(
-                          widget.item.id!, widget.quantity, _provider)),
-                  child2: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      '1',
-                      style: TextStyle(color: Colors.white),
-                    ),
+            if (_expanded!)
+              Column(
+                children: [
+                  SizedBox(
+                    height: 6,
                   ),
-                  child3: _container(
-                      Icons.add,
-                      () async => await incrementAndUpdate(
-                          widget.item.id!, widget.quantity, _provider)),
-                ))
-        ],
+                  CommonRow(
+                      child1: GestureDetector(
+                        child: Icon(
+                          Icons.delete_outline,
+                          color: Colors.white,
+                        ),
+                        onTap: () async =>
+                            _deleteItem(widget.item.id!, _provider),
+                      ),
+                      child3: CommonRow(
+                        child1: _container(
+                            MyIcons.minus,
+                            () async => await decrementAndUpdate(
+                                widget.item.id!, widget.quantity, _provider)),
+                        child2: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            '1',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        child3: _container(
+                            Icons.add,
+                            () async => await incrementAndUpdate(
+                                widget.item.id!, widget.quantity, _provider)),
+                      )),
+                ],
+              )
+          ],
+        ),
       ),
     );
   }
 
   ///increment the quantity and update the database
   Future<void> incrementAndUpdate(
-      String id, int quantity, ItemsPageModel provider) async {
+      String id, int quantity, BagPageModel provider) async {
     try {
       int _quantity = quantity + 1;
       final result = await provider.updateItem(id, _quantity.toString());
@@ -114,7 +132,7 @@ class _BagSummaryWidgetState extends State<BagSummaryWidget> {
 
   ///decrement the quantity and update the database
   Future<void> decrementAndUpdate(
-      String id, int quantity, ItemsPageModel provider) async {
+      String id, int quantity, BagPageModel provider) async {
     try {
       int _quantity = quantity - 1;
 
@@ -127,10 +145,14 @@ class _BagSummaryWidgetState extends State<BagSummaryWidget> {
     }
   }
 
-  Future<void> _deleteItem(String id, ItemsPageModel provider) async {
+  Future<void> _deleteItem(String id, BagPageModel provider) async {
     try {
-      final result = await provider.deleteItem(id);
-      print('Delete Result: $result');
+      await provider.deleteItem(id);
+      await Fluttertoast.showToast(
+          backgroundColor: Colors.white,
+          msg: 'Deleted successfully',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER);
     } catch (error) {
       print('Delete Error: $error');
     }

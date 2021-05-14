@@ -43,7 +43,7 @@ class SqLiteDatabase {
   }
 
   static Future<List<Map<String, dynamic>>> readAllBagData() async {
-    print('DB Read data11:');
+
     try {
       final db = await SqLiteDatabase._database();
       final result = await db.query(DbVariables.tableName);

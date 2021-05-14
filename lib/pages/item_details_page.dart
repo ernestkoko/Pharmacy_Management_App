@@ -7,13 +7,20 @@ import 'package:dro_pharmacy/widgets/common_widgets/common_row_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ItemDetailsPage extends StatelessWidget {
+class ItemDetailsPage extends StatefulWidget {
   static final route = 'item_details_page';
+
+  @override
+  _ItemDetailsPageState createState() => _ItemDetailsPageState();
+}
+
+class _ItemDetailsPageState extends State<ItemDetailsPage> {
+  ItemsPageModel? _provider;
 
   @override
   Widget build(BuildContext context) {
     final item = ModalRoute.of(context)!.settings.arguments as ItemData;
-    final itemProvider = Provider.of<ItemsPageModel>(context);
+     _provider = Provider.of<ItemsPageModel>(context);
     print('Args: $item');
     print('Args Id: ${item.id}');
     return Scaffold(
@@ -29,7 +36,7 @@ class ItemDetailsPage extends StatelessWidget {
                 child: Row(children: [
                   const Icon(Icons.shopping_bag_outlined),
                   FutureBuilder<List<BagData>?>(
-                      future: itemProvider.getAllCartItems(),
+                      future: _provider!.getAllCartItems(),
                       builder: (ctx, snapshot) {
                         if (snapshot.hasData) {
                           ///return the length of the list if there is data
@@ -107,17 +114,17 @@ class ItemDetailsPage extends StatelessWidget {
                             children: [
                               IconButton(
                                 icon: Icon(MyIcons.minus),
-                                onPressed: itemProvider.decrementItemQuantity,
+                                onPressed: _provider!.decrementItemQuantity,
                                 padding: EdgeInsets.all(0),
                                 iconSize: 20,
                               ),
                               Text(
-                                "${itemProvider.itemQuantity}",
+                                "${_provider!.itemQuantity}",
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               IconButton(
                                 icon: Icon(Icons.add),
-                                onPressed: itemProvider.incrementItemQuantity,
+                                onPressed: _provider!.incrementItemQuantity,
                                 padding: EdgeInsets.all(0),
                                 iconSize: 20,
                               )
@@ -185,11 +192,12 @@ class ItemDetailsPage extends StatelessWidget {
                 CommonRow(
                   child2: ElevatedButton.icon(
                     onPressed: () =>
-                        _addToCart(item.id!, itemProvider, context, item),
+                        _addToCart(item.id!, _provider!, context, item),
                     icon: Icon(Icons.add_photo_alternate_outlined),
                     label: Text("Add to bag"),
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.purple.shade700),
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.purple.shade700),
                     ),
                   ),
                 )
@@ -312,4 +320,17 @@ class ItemDetailsPage extends StatelessWidget {
       child2: child,
     );
   }
+
+void _resetItemQuantity(){
+    _provider!.setItemQuantityToOne();
+}
+
+
+  @override
+  void deactivate() {
+
+    _resetItemQuantity();
+    super.deactivate();
+  }
+
 }

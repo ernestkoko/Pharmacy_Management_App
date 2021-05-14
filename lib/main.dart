@@ -1,3 +1,4 @@
+import 'package:dro_pharmacy/page_models/bag_page_model.dart';
 import 'package:dro_pharmacy/page_models/items_page_model.dart';
 import 'package:dro_pharmacy/pages/bag_page.dart';
 import 'package:dro_pharmacy/pages/item_details_page.dart';
@@ -16,7 +17,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<ItemsPageModel>(
-            create: (ctx) => ItemsPageModel())
+            create: (ctx) => ItemsPageModel()),
+        ChangeNotifierProvider<BagPageModel>(
+            create: (BuildContext ctx) => BagPageModel())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

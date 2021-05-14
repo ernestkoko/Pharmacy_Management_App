@@ -1,5 +1,6 @@
 import 'package:dro_pharmacy/data/bag_data.dart';
 import 'package:dro_pharmacy/data/item_data.dart';
+import 'package:dro_pharmacy/page_models/bag_page_model.dart';
 import 'package:dro_pharmacy/page_models/items_page_model.dart';
 import 'package:dro_pharmacy/widgets/bag_summary_widget/bag_summary_widget.dart';
 import 'package:dro_pharmacy/widgets/common_widgets/common_row_widget.dart';
@@ -11,7 +12,8 @@ class BagPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ItemsPageModel>(context);
+    final _provider = Provider.of<BagPageModel>(context);
+    final provider = Provider.of<ItemsPageModel>(context, listen: false);
     Color _white = Colors.white;
     return Scaffold(
       body: SafeArea(
@@ -62,7 +64,7 @@ class BagPage extends StatelessWidget {
                 ),
                 child3: Container(
                   child: FutureBuilder<List<BagData>?>(
-                      future: provider.getAllCartItems(),
+                      future: _provider.getAllCartItems(),
                       builder: (ctx, snapshot) {
                         if (snapshot.hasData) {
                           ///return the length of the list if there is data
@@ -104,7 +106,16 @@ class BagPage extends StatelessWidget {
 
                     ///check if the is data and return the needed widget if true
                     if (snapshot.hasData) {
-                      return listWidget(snapshot.data!, provider.itemDatList);
+                      if (snapshot.data!.isNotEmpty) {
+                        return listWidget(snapshot.data!, provider.itemDatList);
+                      } else {
+                        return Center(
+                          child: Text(
+                            'You have got no item in your bag',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        );
+                      }
                     }
                     if (snapshot.hasError) {
                       return Center(
