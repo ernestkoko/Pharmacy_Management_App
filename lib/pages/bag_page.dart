@@ -102,6 +102,7 @@ class BagPage extends StatelessWidget {
                     if (snapshot.connectionState == ConnectionState.waiting)
                       return Center(child: CircularProgressIndicator());
 
+                    ///check if the is data and return the needed widget if true
                     if (snapshot.hasData) {
                       return listWidget(snapshot.data!, provider.itemDatList);
                     }
@@ -117,7 +118,7 @@ class BagPage extends StatelessWidget {
               CommonRow(
                 child1: Text(
                   "Total",
-                  style: TextStyle(color: Colors.white, fontSize:20),
+                  style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
                 child3: FutureBuilder<List<ItemData>?>(
                   future: provider.getAllItems(),
@@ -134,7 +135,7 @@ class BagPage extends StatelessWidget {
                       }
                       return Text(
                         "N${amount.round()}",
-                        style: TextStyle(color: Colors.white, fontSize:20),
+                        style: TextStyle(color: Colors.white, fontSize: 20),
                       );
                     }
                     if (snapshot.hasError) {

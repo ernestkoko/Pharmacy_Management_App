@@ -37,22 +37,47 @@ class SqLiteDatabase {
       print('DB Insert: ');
       return await db.insert(DbVariables.tableName, data,
           conflictAlgorithm: ConflictAlgorithm.replace);
-
-
     } catch (error) {
       rethrow;
     }
   }
 
   static Future<List<Map<String, dynamic>>> readAllBagData() async {
-    print('DB Read data:');
+    print('DB Read data11:');
     try {
       final db = await SqLiteDatabase._database();
-     final result = await db.query(DbVariables.tableName);
-      print('DB Read data: $result');
-     return result;
+      final result = await db.query(DbVariables.tableName);
+      print('DB Read data12: $result');
+      return result;
     } catch (error) {
       print('Db Read data error: $error');
+      rethrow;
+    }
+  }
+
+  static Future<int> updateItem(String id, String quantity) async {
+    try {
+      final db = await SqLiteDatabase._database();
+      final result = await db.rawUpdate(
+          'UPDATE ${DbVariables.tableName}' +
+              ' SET ${DbVariables.cartItemQuantity} = ? WHERE ${DbVariables.tableId} = ?',
+          [quantity, id]);
+
+      return result;
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  ///delete an item from the database
+  static Future<int?> deleteItem(String id) async {
+    try {
+      final db = await SqLiteDatabase._database();
+      final result = await db.rawDelete(
+          'DELETE FROM ${DbVariables.tableName} WHERE ${DbVariables.tableId} = ?',
+          [id]);
+      return result;
+    } catch (error) {
       rethrow;
     }
   }

@@ -1,7 +1,9 @@
 import 'package:dro_pharmacy/assets/myIcons.dart';
 import 'package:dro_pharmacy/data/item_data.dart';
+import 'package:dro_pharmacy/page_models/items_page_model.dart';
 import 'package:dro_pharmacy/widgets/common_widgets/common_row_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class BagSummaryWidget extends StatefulWidget {
   final ItemData item;
@@ -20,6 +22,7 @@ class _BagSummaryWidgetState extends State<BagSummaryWidget> {
   @override
   Widget build(BuildContext context) {
     Color _white = Colors.white;
+    final _provider = Provider.of<ItemsPageModel>(context);
     return Container(
       margin: const EdgeInsets.only(top: 11),
       child: Column(
@@ -73,12 +76,13 @@ class _BagSummaryWidgetState extends State<BagSummaryWidget> {
           ),
           if (_expanded)
             CommonRow(
-                child1: Icon(
-                  Icons.delete,
-                  color: Colors.white,
-                ),
+                child1: _container(Icons.delete,
+                    () async => _deleteItem(widget.item.id!, _provider)),
                 child3: CommonRow(
-                  child1: _container(MyIcons.minus, () {}),
+                  child1: _container(
+                      MyIcons.minus,
+                      () async => await decrementAndUpdate(
+                          widget.item.id!, widget.quantity, _provider)),
                   child2: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
@@ -86,11 +90,50 @@ class _BagSummaryWidgetState extends State<BagSummaryWidget> {
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
-                  child3: _container(Icons.add, () {}),
+                  child3: _container(
+                      Icons.add,
+                      () async => await incrementAndUpdate(
+                          widget.item.id!, widget.quantity, _provider)),
                 ))
         ],
       ),
     );
+  }
+
+  ///increment the quantity and update the database
+  Future<void> incrementAndUpdate(
+      String id, int quantity, ItemsPageModel provider) async {
+    try {
+      int _quantity = quantity + 1;
+      final result = await provider.updateItem(id, _quantity.toString());
+      print('Update Result: $result');
+    } catch (error) {
+      print('Update Error: $error');
+    }
+  }
+
+  ///decrement the quantity and update the database
+  Future<void> decrementAndUpdate(
+      String id, int quantity, ItemsPageModel provider) async {
+    try {
+      int _quantity = quantity - 1;
+
+      ///ensure _quantity is not less that one
+      if (_quantity <= 1) _quantity = 1;
+      final result = await provider.updateItem(id, _quantity.toString());
+      print('Update Result: $result');
+    } catch (error) {
+      print('Update Error: $error');
+    }
+  }
+
+  Future<void> _deleteItem(String id, ItemsPageModel provider) async {
+    try {
+      final result = await provider.deleteItem(id);
+      print('Delete Result: $result');
+    } catch (error) {
+      print('Delete Error: $error');
+    }
   }
 
   Widget _container(IconData icon, VoidCallback fun) {

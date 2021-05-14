@@ -16,7 +16,7 @@ class ItemsPageModel with ChangeNotifier {
     ItemData(
         id: "PahAHGAGI",
         imageUrl:
-            'https://mir-s3-cdn-cf.behance.net/project_modules/disp/d08c2420185017.5604201066224.jpg',
+        'https://mir-s3-cdn-cf.behance.net/project_modules/disp/d08c2420185017.5604201066224.jpg',
         manufacturerName: 'DUROFEN',
         // itemName: "Glucofen Sulphate  500 mg",
         itemName: "Glucofen Sulphate",
@@ -25,7 +25,7 @@ class ItemsPageModel with ChangeNotifier {
     ItemData(
       id: "HJAGjAU",
       imageUrl:
-          "https://i.pinimg.com/originals/69/b8/e1/69b8e14095884291da494a3543f20b11.jpg",
+      "https://i.pinimg.com/originals/69/b8/e1/69b8e14095884291da494a3543f20b11.jpg",
       manufacturerName: "LIPTIPS",
       // itemName: 'GLIBOFEN Tablets 5/850',
       itemName: 'GLIBOFEN Tablets',
@@ -35,7 +35,7 @@ class ItemsPageModel with ChangeNotifier {
     ItemData(
       id: 'AERjahAY',
       imageUrl:
-          "https://mir-s3-cdn-cf.behance.net/project_modules/disp/51adf120185023.5604201011e59.jpg",
+      "https://mir-s3-cdn-cf.behance.net/project_modules/disp/51adf120185023.5604201011e59.jpg",
       manufacturerName: "Martarios",
       itemName: 'Tavegyl Clemastinum1',
       itemType: 'Tablet',
@@ -44,26 +44,43 @@ class ItemsPageModel with ChangeNotifier {
     ItemData(
       id: "YuHahHn",
       imageUrl:
-          "https://mir-s3-cdn-cf.behance.net/project_modules/disp/51adf120185023.5604201011e59.jpg",
-      manufacturerName: "NOVARTIS",
-      itemName: 'Tavegyl Clemastinum2',
+      "https://banner2.cleanpng.com/20180920/kaw/kisspng-brand-product-design-drug-drug-box-by-yulanglay-on-deviantart-5ba43c2ed52d32.1570257015374899668732.jpg",
+      manufacturerName: "ProgGreffon",
+      itemName: '2.468mg Tacrolimus',
       itemType: 'Tablet',
       itemPrice: 739,
     ),
     ItemData(
       id: "5Ggjkjek",
       imageUrl:
-          "https://mir-s3-cdn-cf.behance.net/project_modules/disp/51adf120185023.5604201011e59.jpg",
-      manufacturerName: "Emzor",
-      itemName: 'Tavegyl Clemastinum3',
+      "https://i.pinimg.com/originals/64/8e/a3/648ea396aa84a07f034d71e9f0e2dd4a.jpg",
+      manufacturerName: "DISPRIN",
+      itemName: 'Disprin Tab',
       itemType: 'Tablet',
       itemPrice: 200,
+    ),
+    ItemData(
+      id: "3uRejsi",
+      imageUrl:
+      "https://e7.pngegg.com/pngimages/1006/778/png-clipart-pharmaceutical-packaging-pharmaceutical-industry-packaging-and-labeling-pharmaceutical-engineering-bayer-design-pharmaceutical-drug-behance.png",
+      manufacturerName: "Aspirin",
+      itemName: 'Aspirin Tab 250mg',
+      itemType: 'Tablet',
+      itemPrice: 204,
     )
   ];
 
   ///a list of Item data that an external class can access
   List<ItemData> get list {
-    return _isSearch ? [..._data] : [...productList];
+    return _isSearch ? [
+    ...
+    _data
+    ]
+    :
+    [
+    ...
+    productList
+    ];
   }
 
   ///
@@ -152,7 +169,7 @@ class ItemsPageModel with ChangeNotifier {
       final _listOfItem = await SqLiteDatabase.readAllBagData();
       if (_listOfItem.isEmpty) {
         final data =
-            BagData(itemId: itemId, quantity: _itemQuantity.toString()).toMap();
+        BagData(itemId: itemId, quantity: _itemQuantity.toString()).toMap();
         final res = await SqLiteDatabase.insertIntoDb(data);
 
         ///notify the listeners
@@ -165,7 +182,7 @@ class ItemsPageModel with ChangeNotifier {
         if (result.itemId == itemId) {
           final qty = int.tryParse(result.quantity!)! + _itemQuantity;
           final data =
-              BagData(itemId: itemId, quantity: qty.toString()).toMap();
+          BagData(itemId: itemId, quantity: qty.toString()).toMap();
           final _result = await SqLiteDatabase.insertIntoDb(data);
 
           ///notify the listeners
@@ -175,8 +192,8 @@ class ItemsPageModel with ChangeNotifier {
           return;
         } else {
           final data =
-              BagData(itemId: itemId, quantity: _itemQuantity.toString())
-                  .toMap();
+          BagData(itemId: itemId, quantity: _itemQuantity.toString())
+              .toMap();
           final res = await SqLiteDatabase.insertIntoDb(data);
           print("Result: $res");
 
@@ -217,7 +234,36 @@ class ItemsPageModel with ChangeNotifier {
         }).toList();
       }
 
+      ///notify listeners
+
+
       return finalList;
     } catch (error) {}
+  }
+
+  ///[updateItem] will update the item with [id] and [quantity] in the db
+  Future<int> updateItem(String id, String quantity) async {
+    try {
+      final result = SqLiteDatabase.updateItem(id, quantity);
+
+      ///notify listeners
+      notifyListeners();
+      return result;
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  ///[delete] deletes an item with the given [id] in the database table
+  Future<int?> deleteItem(String id) async {
+    try {
+      final result = await SqLiteDatabase.deleteItem(id);
+
+      ///notify listeners
+      notifyListeners();
+      return result;
+    } catch (error) {
+      rethrow;
+    }
   }
 }
