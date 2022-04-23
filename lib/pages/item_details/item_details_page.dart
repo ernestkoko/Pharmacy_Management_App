@@ -1,34 +1,28 @@
+import 'package:dro_pharmacy/app_routes/routes_and_pages.dart';
 import 'package:dro_pharmacy/assets/myIcons.dart';
-import 'package:dro_pharmacy/data/bag_data.dart';
+
 import 'package:dro_pharmacy/data/item_data.dart';
-import 'package:dro_pharmacy/page_models/bag_page_model.dart';
-import 'package:dro_pharmacy/page_models/items_page_model.dart';
-import 'package:dro_pharmacy/pages/bag_page.dart';
+
+import 'package:dro_pharmacy/pages/item_details/item_details_controller.dart';
 import 'package:dro_pharmacy/widgets/common_widgets/common_row_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 
-class ItemDetailsPage extends StatefulWidget {
-  static final route = 'item_details_page';
 
-  @override
-  _ItemDetailsPageState createState() => _ItemDetailsPageState();
-}
+class ItemDetailsPage extends GetView<ItemDetailsController> {
 
-class _ItemDetailsPageState extends State<ItemDetailsPage> {
-  ItemsPageModel? _provider;
 
   @override
   Widget build(BuildContext context) {
-    final item = ModalRoute.of(context)!.settings.arguments as ItemData;
-     _provider = Provider.of<ItemsPageModel>(context);
-    final provider = Provider.of<BagPageModel>(context, listen: false);
+    final item = controller.item as ItemData;
+
+
     print('Args: $item');
     print('Args Id: ${item.id}');
     return Scaffold(
         appBar: AppBar(elevation: 0, actions: [
           GestureDetector(
-            onTap: () => Navigator.of(context).pushNamed(BagPage.route),
+            onTap: () => Get.toNamed(Routes.BAG_PAGE, arguments: controller.itemDatList),
             child: Container(
                 margin: const EdgeInsets.all(10),
                 padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -37,19 +31,9 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                     borderRadius: BorderRadius.all(Radius.circular(10))),
                 child: Row(children: [
                   const Icon(Icons.shopping_bag_outlined),
-                  Consumer<BagPageModel>(
-                    builder:(ctx, _, child)=> FutureBuilder<List<BagData>?>(
-                        future: _provider!.getAllCartItems(),
-                        builder: (ctx, snapshot) {
-                          if (snapshot.hasData) {
-                            ///return the length of the list if there is data
-                            return Text('${snapshot.data!.length}');
-                          }
 
-                          ///if no data is assigned return Text with zero string
-                          return Text('0');
-                        }),
-                  )
+                    Obx(()=>Text('${controller.bagDataList.length}'),),
+
                 ])),
           )
         ]),
@@ -62,18 +46,18 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                   height: MediaQuery.of(context).size.height * 0.2,
                   width: MediaQuery.of(context).size.width * 0.4,
                   child: Image.asset(
-                    item.imageUrl!,
+                    item.imageUrl,
                     fit: BoxFit.contain,
                   ),
                 ),
                 CommonRow(
                   child1: Text(
-                    item.itemName!,
+                    item.itemName,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
                 CommonRow(
-                  child1: Text(item.itemType!,
+                  child1: Text(item.itemType,
                       style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
                 SizedBox(
@@ -118,17 +102,17 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                             children: [
                               IconButton(
                                 icon: Icon(MyIcons.minus),
-                                onPressed: _provider!.decrementItemQuantity,
+                                onPressed: controller.decrementItemQuantity,
                                 padding: EdgeInsets.all(0),
                                 iconSize: 20,
                               ),
-                              Text(
-                                "${_provider!.itemQuantity}",
+                              Obx(()=> Text(
+                                "${controller.itemQuantity.value}",
                                 style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
+                              ),),
                               IconButton(
                                 icon: Icon(Icons.add),
-                                onPressed: _provider!.incrementItemQuantity,
+                                onPressed: controller.incrementItemQuantity,
                                 padding: EdgeInsets.all(0),
                                 iconSize: 20,
                               )
@@ -152,7 +136,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                           top: -3,
                         ),
                         Text(
-                          '${item.itemPrice!}',
+                          '${item.itemPrice}',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -178,12 +162,12 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                   height: 10,
                 ),
                 _commonRowWithColumn(
-                    Icons.score_rounded, 'CONSTITUENTS', item.itemName!),
+                    Icons.score_rounded, 'CONSTITUENTS', item.itemName),
                 SizedBox(
                   height: 10,
                 ),
                 _commonRowWithColumn(Icons.account_balance_wallet_outlined,
-                    'DISPENSED IN', item.itemType!),
+                    'DISPENSED IN', item.itemType),
                 CommonRow(
                   child2: Text(
                     'one pack of ..',
@@ -195,8 +179,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                 ),
                 CommonRow(
                   child2: ElevatedButton.icon(
-                    onPressed: () =>
-                        _addToCart(item.id!, _provider!, context, item),
+                    onPressed: () => _addToCart(item.id, context, item),
                     icon: Icon(Icons.add_photo_alternate_outlined),
                     label: Text("Add to bag"),
                     style: ButtonStyle(
@@ -211,10 +194,10 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
         ));
   }
 
-  Future<void> _addToCart(String itemId, ItemsPageModel provider,
-      BuildContext context, ItemData item) async {
+  Future<void> _addToCart(
+      String itemId, BuildContext context, ItemData item) async {
     try {
-      await provider.addToCart(itemId);
+      await controller.addToCart(itemId);
 
       ///show dialog
       showDialog(
@@ -263,9 +246,9 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                         ElevatedButton(
                           onPressed: () {
                             ///pop the dialog first
-                            Navigator.of(context).pop();
+                           // Navigator.of(context).pop();
                             //navigate to the bag page
-                            Navigator.of(context).pushNamed(BagPage.route);
+                            Get.toNamed(Routes.BAG_PAGE, arguments: controller.itemDatList);
                           },
                           child: Text('View Bag'),
                           style: ButtonStyle(
@@ -325,16 +308,15 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
     );
   }
 
-void _resetItemQuantity(){
-    _provider!.setItemQuantityToOne();
-}
-
-
-  @override
-  void deactivate() {
-
-    _resetItemQuantity();
-    super.deactivate();
+  void _resetItemQuantity() {
+    controller.setItemQuantityToOne();
   }
+
+// @override
+// void deactivate() {
+//
+//   _resetItemQuantity();
+//   super.deactivate();
+// }
 
 }

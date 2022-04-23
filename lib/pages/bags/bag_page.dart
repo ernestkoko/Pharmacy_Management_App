@@ -2,18 +2,19 @@ import 'package:dro_pharmacy/data/bag_data.dart';
 import 'package:dro_pharmacy/data/item_data.dart';
 import 'package:dro_pharmacy/page_models/bag_page_model.dart';
 import 'package:dro_pharmacy/page_models/items_page_model.dart';
+import 'package:dro_pharmacy/pages/bags/bag_page_controller.dart';
+import 'package:dro_pharmacy/pages/item_page/item_page_controller.dart';
 import 'package:dro_pharmacy/widgets/bag_summary_widget/bag_summary_widget.dart';
 import 'package:dro_pharmacy/widgets/common_widgets/common_row_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
-class BagPage extends StatelessWidget {
-  static final route = 'bag_page';
-
+class BagPage extends GetView<BagPageController> {
   @override
   Widget build(BuildContext context) {
-    final _provider = Provider.of<BagPageModel>(context, listen: false);
-    final provider = Provider.of<ItemsPageModel>(context, listen: false);
+    //final _provider = Provider.of<BagPageModel>(context, listen: false);
+    //final _itemPageController = Get.find<ItemPageController>();
     Color _white = Colors.white;
     return Scaffold(
       body: SafeArea(
@@ -63,19 +64,10 @@ class BagPage extends StatelessWidget {
                   ],
                 ),
                 child3: Container(
-                  child: Consumer<BagPageModel>(
-                    builder: (ctx, _, child) => FutureBuilder<List<BagData>?>(
-                        future: _provider.getAllCartItems(),
-                        builder: (ctx, snapshot) {
-                          if (snapshot.hasData) {
-                            ///return the length of the list if there is data
-                            return Text('${snapshot.data!.length}');
-                          }
+                  child: Obx(()=> Text('${controller.arg.length} ')),
 
-                          ///if no data is assigned return Text with zero string
-                          return Text('0');
-                        }),
-                  ),
+                  ///return the length of the list if there is data
+
                   padding: EdgeInsets.all(10),
                   // margin: const EdgeInsets.only(right: 10),
                   decoration: BoxDecoration(
@@ -100,76 +92,37 @@ class BagPage extends StatelessWidget {
                     borderRadius: BorderRadius.all(Radius.circular(20))),
               ),
               Expanded(
-                child: Consumer<BagPageModel>(
-                  builder: (ctx, _, child) => FutureBuilder<List<ItemData>?>(
-                    future: provider.getAllItems(),
-                    builder: (BuildContext ctx, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting)
-                        return Center(child: CircularProgressIndicator());
-
-                      ///check if the is data and return the needed widget if true
-                      if (snapshot.hasData) {
-                        if (snapshot.data!.isNotEmpty) {
-                          return listWidget(
-                              snapshot.data!, provider.itemDatList);
-                        } else {
-                          return Center(
-                            child: Text(
-                              'You have got no item in your bag',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          );
-                        }
-                      }
-                      if (snapshot.hasError) {
-                        return Center(
-                          child: Text("${snapshot.error}"),
-                        );
-                      }
-                      return Center(child: CircularProgressIndicator());
-                    },
-                  ),
-                ),
-              ),
+                  child: controller.obx(
+                      (state) =>
+                          listWidget(state!, controller.arg),
+                      onEmpty: Center(
+                        child: Text('Empty'),
+                      ),
+                      onError: (error) => Center(
+                            child: Text('error'),
+                          ))),
               CommonRow(
                 child1: Text(
                   "Total",
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
-                child3: Consumer<BagPageModel>(
-                  builder: (ctx, _, child) => FutureBuilder<List<ItemData>?>(
-                    future: provider.getAllItems(),
-                    builder: (BuildContext ctx, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting)
-                        return Center(child: CircularProgressIndicator());
-
-                      if (snapshot.hasData) {
-                        ///get the data
-                        final data = snapshot.data!;
-                        final list = provider.itemDatList;
-                        double amount = 0;
-                        for (int i = 0; i < data.length; i++) {
-                          amount += data[i].itemPrice! * list[i]!;
-                        }
-                        return Text(
-                          "N${amount.round()}",
-                          style: TextStyle(color: Colors.white, fontSize: 20),
-                        );
-                      }
-                      if (snapshot.hasError) {
-                        return Center(
-                          child: Text("${snapshot.error}"),
-                        );
-                      }
-                      return Center(child: CircularProgressIndicator());
-                    },
-                  ),
-                ),
-
-                // Text(
-                //   "${provider.totalAmount}",
-                //   style: TextStyle(color: Colors.white),
-                // ),
+                child3: controller.obx((state) {
+                  double totalAmount = 0;
+                  for (int index = 0; index < state!.length; index++) {
+                    totalAmount +=
+                        state[index].itemPrice * controller.arg[index]!;
+                  }
+                  return Text(
+                    "N$totalAmount ",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  );
+                },
+                    onError: (error) => Center(
+                          child: Text('Error occurred'),
+                        ),
+                    onEmpty: Center(
+                      child: Text('Data is empty'),
+                    )),
               ),
               Container(
                 child: Center(
@@ -191,12 +144,14 @@ class BagPage extends StatelessWidget {
     );
   }
 
-  Widget listWidget(List<ItemData> data, List<int?> quantity) {
+  Widget listWidget(List<ItemData> data, List<int?> quantityList) {
+    print(data);
+    print("Quantity: $quantityList");
     return ListView.builder(
         shrinkWrap: true,
         physics: AlwaysScrollableScrollPhysics(),
         itemCount: data.length,
         itemBuilder: (BuildContext ctx, int index) =>
-            BagSummaryWidget(data[index], quantity[index]!));
+            BagSummaryWidget(data[index], quantityList[index]!, index: index,),);
   }
 }

@@ -1,5 +1,4 @@
 import 'package:dro_pharmacy/data/item_data.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ItemWidget extends StatelessWidget {
@@ -22,7 +21,7 @@ class ItemWidget extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Image.asset(
-                  item.imageUrl!,
+                  item.imageUrl,
                   errorBuilder: (ctx, exception, trace) => Icon(
                     Icons.error_outline,
                     color: Colors.red,
